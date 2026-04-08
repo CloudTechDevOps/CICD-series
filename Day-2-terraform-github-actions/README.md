@@ -1,4 +1,3 @@
-📘 GitHub Actions + Terraform Pipeline
 🚀 What is GitHub Actions?
 
 GitHub Actions is a CI/CD tool provided by GitHub.
@@ -19,26 +18,62 @@ Deploy it
 
 👉 In GitHub Actions, pipelines are called workflows
 
-📂 Your Terraform Workflow
-# name: Terraform Deploy
+📂 Terraform Workflow Example
+name: Terraform Deploy
 
-👉 Name of the workflow (visible in GitHub UI)
+on:
+  workflow_dispatch:   # Manual trigger only
 
-# on:
-#   workflow_dispatch:
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
 
-👉 Defines trigger
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: us-east-1
 
-workflow_dispatch = Manual trigger from GitHub UI
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+🧾 Explanation (Step-by-Step)
+🔹 Workflow Name
+name: Terraform Deploy
+
+👉 Name shown in GitHub UI
+
+🔹 Trigger
+on:
+  workflow_dispatch:
+
+👉 Manual trigger from GitHub UI
 ✔ No automatic execution
+
+🔹 Job Definition
 jobs:
   terraform:
 
-👉 Defines a job named terraform
+👉 Creates a job named terraform
 
+🔹 Runner
 runs-on: ubuntu-latest
 
-👉 Runs job on a Linux virtual machine
+👉 Runs on a Linux virtual machine
 
 🔐 Environment Variables
 env:
@@ -46,16 +81,19 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_DEFAULT_REGION: us-east-1
 
-👉 सेट AWS credentials using GitHub Secrets
+👉 Uses GitHub Secrets to securely store:
 
-Keeps sensitive data secure
-Used by Terraform
+AWS Access Key
+AWS Secret Key
+
+👉 Used by Terraform
+
 ⚙️ Steps Breakdown
 1️⃣ Checkout Code
 - name: Checkout
   uses: actions/checkout@v4
 
-👉 Downloads repository code into runner
+👉 Downloads repository code into the runner
 
 2️⃣ Setup Terraform
 - name: Setup Terraform
@@ -70,12 +108,12 @@ Used by Terraform
 👉 Initializes Terraform:
 
 Downloads providers
-Prepares backend
+Sets up backend
 4️⃣ Terraform Validate
 - name: Terraform Validate
   run: terraform validate
 
-👉 Checks syntax and configuration errors
+👉 Checks configuration syntax
 
 5️⃣ Terraform Plan
 - name: Terraform Plan
@@ -83,16 +121,15 @@ Prepares backend
 
 👉 Creates execution plan:
 
-Shows what will change
-Saves plan to file (tfplan)
+Shows changes
+Saves plan as tfplan
 6️⃣ Terraform Apply
 - name: Terraform Apply
   run: terraform apply -auto-approve tfplan
 
-👉 Applies changes:
+👉 Applies infrastructure changes
+⚠️ -auto-approve skips manual confirmation
 
-Uses saved plan
--auto-approve skips manual confirmation
 🔁 Workflow Execution Flow
 Manual Trigger
      ↓
@@ -110,9 +147,9 @@ Apply (Deploy Infrastructure)
 🧠 Key Concepts
 🔹 GitHub Actions Components
 Workflow → Full automation (YAML file)
-Job → Group of steps (runs on VM)
+Job → Group of steps
 Step → Individual task
-Runner → Machine executing job
+Runner → Machine executing the job
 🔹 Terraform in CI/CD
 
 Using Terraform in pipelines helps:
@@ -121,8 +158,8 @@ Automate infrastructure
 Avoid manual errors
 Ensure consistency
 🔐 Best Practices
-Use secrets for credentials
+Use GitHub Secrets for credentials
 Avoid -auto-approve in production
-Add approval step before apply
+Add manual approval before apply
 Store state remotely (S3 + DynamoDB)
 Use separate environments (dev/stage/prod)
