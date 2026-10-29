@@ -466,3 +466,27 @@ pipeline {
         }
     }
 }
+
+
+#scripted pipeline with label example
+node('slave-1') {
+    stage('Preparation') { 
+        git branch: 'main', url: 'https://github.com/CloudTechDevOps/07-00pmTerraform.git'
+    }
+    stage('init') {
+        dir("Day-1-basic-config-files"){
+            sh 'terraform init'
+        }
+    }
+    stage('plan') {
+        dir("Day-1-basic-config-files"){
+            sh 'terraform plan'
+        }
+    }
+    stage('apply') {
+        dir("Day-1-basic-config-files"){
+            sh 'terraform apply -auto-approve'
+        }
+    }
+}
+
