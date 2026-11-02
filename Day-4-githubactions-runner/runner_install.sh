@@ -19,3 +19,7 @@ tar xzf ./actions-runner-linux-x64-2.336.0.tar.gz
 # 6. Optional: install as service
 sudo ./svc.sh install
 sudo ./svc.sh start
+
+
+
+#Note: to check inside te ec2 by runing this command ps -ef | grep Runner.Listener
