@@ -17,5 +17,5 @@ tar xzf ./actions-runner-linux-x64-2.336.0.tar.gz
 ./run.sh &
 
 # 6. Optional: install as service
-./svc.sh install
-./svc.sh start
+sudo ./svc.sh install
+sudo ./svc.sh start
